@@ -23,23 +23,24 @@ target = process.argv
 target.splice(0, 2)
 argm = MINIMIST(target)
 
-pkgstr = argm.i || argm.install
-linkstr = argm.l || argm.link
+try
+  pkgstr = argm.i || argm.install
+  pkgname = pkgstr.replace(/@.*$/, "")
+catch
+  console.log """
+    Usage:
+      frpm [option] [package]
+    option:
+      -i : Install package and link library.
+      -l : Only link library.
+  """
+  PROCESS.exit()
 
-pkgname = pkgstr || linkstr
-pkgname = pkgname.replace(/@.*$/, "")
+mode = "install"
+pkgdir = "#{nodedir}/#{pkgname}"
+incdir = "#{nodedir}/.include"
 
-if (pkgstr?)
-  mode = "install"
-  pkgdir = "#{nodedir}/#{pkgname}"
-  incdir = "#{nodedir}/.include"
-else if (linkstr?)
-  mode = "link"
-  pkgdir = "."
-  incdir = "../.include"
-
-if (mode == "install")
-  ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
+ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
 
 pkgjson = JSON.parse(FS.readFileSync "#{pkgdir}/package.json")
 keyname = "include"
