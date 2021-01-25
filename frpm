@@ -1,0 +1,44 @@
+#!/usr/bin/env coffee
+MINIMIST = require("minimist")
+ARGV = require("argv")
+FS = require("fs-extra")
+PROCESS = require("process")
+echo = require("ndlog").echo
+execSync = require("child_process").execSync
+
+#=============================================================================
+# check exist file of directory
+isExists = (path) ->
+  try
+    stat = FS.statSync(path)
+  catch err
+    stat = undefined
+  return stat
+#=============================================================================
+
+cwd = PROCESS.cwd()
+nodedir = "#{cwd}/node_modules"
+
+target = process.argv
+target.splice(0, 2)
+argm = MINIMIST(target)
+pkgstr = argm.i || argm.install
+pkgname = pkgstr.replace(/@.*$/, "")
+pkgdir = "#{nodedir}/#{pkgname}"
+incdir = "#{nodedir}/.include"
+
+ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
+pkgjson = JSON.parse(FS.readFileSync "#{pkgdir}/package.json")
+
+keyname = "include"
+if (pkgjson[keyname]?)
+  if (!isExists(incdir)?)
+    FS.mkdirsSync(incdir)
+
+  inclist = pkgjson[keyname]
+  for fname in inclist
+    lnkname = "#{incdir}/#{fname}"
+    if (!isExists(lnkname)?)
+      console.log "-- Create symbolic link #{fname}"
+      ret = execSync("ln -s #{pkgdir}/#{fname} #{incdir}/")
+
