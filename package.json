@@ -10,6 +10,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hajime Oh-yake",
+  "bin": {
+    "frpm": "frpm"
+  },
   "license": "MIT",
   "dependencies": {
     "argv": "0.0.2",
