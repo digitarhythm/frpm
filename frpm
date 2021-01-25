@@ -25,15 +25,22 @@ argm = MINIMIST(target)
 
 pkgstr = argm.i || argm.install
 linkstr = argm.l || argm.link
-if (pkgstr?)
-  mode = "install"
-else if (linkstr?)
-  mode = "link"
 
 pkgname = pkgstr || linkstr
 pkgname = pkgname.replace(/@.*$/, "")
-pkgdir = "#{nodedir}/#{pkgname}"
-incdir = "#{nodedir}/.include"
+
+if (pkgstr?)
+  mode = "install"
+  pkgdir = "#{nodedir}/#{pkgname}"
+  incdir = "#{nodedir}/.include"
+else if (linkstr?)
+  mode = "link"
+  pkgdir = "."
+  incdir = "../.include"
+
+echo "mode=%@\npkgdir=%@\nincdir=%@", mode, pkgdir, incdir
+
+PROCESS.exit()
 
 if (mode == "install")
   ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
