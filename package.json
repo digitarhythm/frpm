@@ -17,6 +17,7 @@
     "fs-extra": "^9.1.0",
     "minimist": "^1.2.5",
     "ndlog": "^0.3.2",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "undefined": "^0.1.0"
   }
 }

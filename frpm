@@ -22,14 +22,23 @@ nodedir = "#{cwd}/node_modules"
 target = process.argv
 target.splice(0, 2)
 argm = MINIMIST(target)
+
 pkgstr = argm.i || argm.install
-pkgname = pkgstr.replace(/@.*$/, "")
+linkstr = argm.l || argm.link
+if (pkgstr?)
+  mode = "install"
+else if (linkstr?)
+  mode = "link"
+
+pkgname = pkgstr || linkstr
+pkgname = pkgname.replace(/@.*$/, "")
 pkgdir = "#{nodedir}/#{pkgname}"
 incdir = "#{nodedir}/.include"
 
-ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
-pkgjson = JSON.parse(FS.readFileSync "#{pkgdir}/package.json")
+if (mode == "install")
+  ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
 
+pkgjson = JSON.parse(FS.readFileSync "#{pkgdir}/package.json")
 keyname = "include"
 if (pkgjson[keyname]?)
   if (!isExists(incdir)?)
