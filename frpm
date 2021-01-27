@@ -40,7 +40,8 @@ mode = "install"
 pkgdir = "#{nodedir}/#{pkgname}"
 incdir = "#{nodedir}/.include"
 
-ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
+if (!isExists(pkgdir)?)
+  ret = execSync("npm install #{pkgstr} > /dev/null 2>&1")
 
 pkgjson = JSON.parse(FS.readFileSync "#{pkgdir}/package.json")
 keyname = "include"
